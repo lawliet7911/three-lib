@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@three-lib/utils": "workspace:^1.0.0",
+    "@types/stats.js": "^0.17.0",
     "@types/three": "^0.150.1",
+    "stats.js": "^0.17.0",
     "three": "^0.151.3"
   }
 }

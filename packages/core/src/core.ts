@@ -1,7 +1,9 @@
 import { merge } from '@three-lib/utils/src'
 import { AmbientLightOption, ThreeInstance, ThreeOptions } from './types'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {
   AmbientLight,
+  AxesHelper,
   Camera,
   Color,
   ColorRepresentation,
@@ -10,6 +12,7 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three'
+import Stats from 'stats.js'
 
 const defaultOption: ThreeOptions = {
   mode: 'prod',
@@ -31,7 +34,8 @@ export class ThreeJs {
   public renderer: Renderer | null = null
   constructor(container: HTMLElement, options: ThreeOptions) {
     this.container = container
-    if (!options.loaders.length) throw SyntaxError('loaders 不可为空')
+
+    if (options?.loaders && options.loaders?.length) throw SyntaxError('loaders 不可为空')
 
     this.options = merge(defaultOption, options)
 
@@ -41,10 +45,11 @@ export class ThreeJs {
   }
 
   render() {
-    const r = () => {
+    const loop = () => {
       this.renderer?.render(this.scene!, this.camera!)
-      requestAnimationFrame(r)
+      requestAnimationFrame(loop)
     }
+    loop()
   }
 }
 /**
@@ -60,14 +65,22 @@ const init = (instance: ThreeInstance, container: HTMLElement) => {
     instance.ambientLight = initAmbientLight(instance.options.ambientLightOption)
     instance.scene.add(instance.ambientLight)
   }
+
   instance.camera = initCamera(container)
   instance.renderer = initRenderer(container, instance.options.clearColor!)
   instance.container.appendChild(instance.renderer.domElement)
+
+  instance.controls = initDefaultControl(instance)
+
+  if (instance.options.mode === 'dev') {
+    initStats(container)
+    initAxisHelper(instance)
+  }
 }
 
-const initScene = (color: number | string): Scene => {
+const initScene = (color: number): Scene => {
   const scene = new Scene()
-  scene.background = new Color(0xffffff)
+  scene.background = new Color(color)
   return scene
 }
 
@@ -96,7 +109,7 @@ const initCamera = (
  * 初始化渲染器，设置背景色
  * @param container Dom容器
  * @param clearColor 背景色
- * @returns 
+ * @returns
  */
 const initRenderer = (container: HTMLElement, clearColor: ColorRepresentation): Renderer => {
   const renderer = new WebGLRenderer({ antialias: true })
@@ -109,7 +122,7 @@ const initRenderer = (container: HTMLElement, clearColor: ColorRepresentation): 
  * 初始化一个窗口resize监听器
  * @param instance three对象实例
  */
-function initResizeListener(instance: ThreeInstance) {
+const initResizeListener = (instance: ThreeInstance) => {
   window.addEventListener('resize', () => {
     instance.camera.aspect = window.innerWidth / window.innerHeight
     instance.camera.updateProjectionMatrix()
@@ -122,4 +135,27 @@ function initResizeListener(instance: ThreeInstance) {
       instance.effectSobel.uniforms['resolution'].value.y = window.innerHeight * window.devicePixelRatio
     }
   })
+}
+
+const initDefaultControl = (instance: ThreeInstance): OrbitControls =>
+  new OrbitControls(instance.camera, instance.renderer!.domElement)
+
+/**
+ * 初始化fps面板 坐标轴
+ * @param container 容器
+ * @returns Stats
+ */
+const initStats = (container: HTMLElement) => {
+  const stats = new Stats()
+  // 将性能监控屏区显示在左上角
+  stats.dom.style.position = 'absolute'
+  stats.dom.style.bottom = '0px'
+  stats.dom.style.zIndex = '100'
+  container.appendChild(stats.dom)
+  return stats
+}
+
+const initAxisHelper = (instance: ThreeInstance)=>{
+  const axesHelper = new AxesHelper(100)
+  instance.scene!.add(axesHelper)
 }

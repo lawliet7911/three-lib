@@ -1,4 +1,5 @@
 import { AmbientLight, Camera, Renderer, Scene } from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export type LoadersArray = Array<'fbx' | 'gltf' | 'obj'>
 /**
@@ -25,11 +26,11 @@ export type AmbientLightOption = {
   /**
    * 颜色值- 16进制数字 `0xffffff` 默认
    */
-  color: number
+  color?: number
   /**
    * 全局光照强度 0 - 1 之间
    */
-  intensity: number
+  intensity?: number
 }
 
 export type ThreeOptions = {
@@ -50,8 +51,14 @@ export type ThreeOptions = {
   /**
    * 需要使用的loader加载器
    */
-  loaders: LoadersArray
+  loaders?: LoadersArray
+  /**
+   * 需要loading检测
+   */
   loading?: boolean
+  /**
+   * 抗锯齿配置
+   */
   antiAliasingType?: AntiALiasConfig
 }
 
@@ -62,5 +69,8 @@ export type ThreeInstance = {
   camera: any // todo 明确类型
   renderer: Renderer | null
   ambientLight: AmbientLight | null
-  effectSobel?: any
+  effectSobel?: any // todo
+  controls: OrbitControls | any // todo
+  composer: any // todo
+  stats: any,
 }

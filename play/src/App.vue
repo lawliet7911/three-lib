@@ -3,13 +3,14 @@ import { ThreeJs } from '@three-lib/core'
 import { onMounted } from 'vue'
 onMounted(() => {
   let dom = document.getElementById('playground')
-  const threeInstance = new ThreeJs(dom!, {
-    loaders: ['gltf'],
-    antiAliasingType: {
-      sampleLevel: 1,
-      unbiased: false,
+  const instance = new ThreeJs(dom!, {
+    mode: 'dev',
+    clearColor: 0x000000,
+    ambientLightOption: {
+      show: true,
     },
   })
+  instance.render()
 })
 </script>
 
