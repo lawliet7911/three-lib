@@ -1,0 +1,19 @@
+{
+  "name": "@three-lib",
+  "version": "0.1.0",
+  "description": "threejs lib monorepo",
+  "main": "index.js",
+  "workspaces": [
+    "packages/*",
+    "play"
+  ],
+  "scripts": {
+    "play": "pnpm -C play dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">= 16"
+  }
+}

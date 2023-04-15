@@ -1,0 +1,17 @@
+{
+  "name": "@three-lib/core",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@three-lib/utils": "workspace:^1.0.0",
+    "@types/three": "^0.150.1",
+    "three": "^0.151.3"
+  }
+}

@@ -1,0 +1,5 @@
+packages:
+  - packages/*
+  # **必要 表示目录下为monorepo的部分，否则是该目录的子目录下才是monorepo
+  - play/**
+  - '!**/test/**'
