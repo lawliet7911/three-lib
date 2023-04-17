@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LoadGlftModel, ThreeJs } from '@three-lib/core'
+import { LoadGlftModel, LoadObjModel, ThreeJs } from '@three-lib/core'
 import { onMounted } from 'vue'
 onMounted(() => {
 
@@ -13,12 +13,26 @@ onMounted(() => {
   })
   instance.render()
 
-  LoadGlftModel('modals/gltf/6fdf02a6-c66f-4749-83bb-4eae20ab8b5b').then(gltf=>{
-    instance.scene?.add(gltf.scene)
+  // 场地模型
+  LoadGlftModel('modals/gltf/6fdf02a6-c66f-4749-83bb-4eae20ab8b5b').then(gltf => {
+    instance.scene!.add(gltf.scene)
   })
 
-  LoadGlftModel('modals/gltf/43dc30aa-e48d-47c2-8863-f2f4d34b03c7').then(gltf=>{
-    instance.scene?.add(gltf.scene)
+  // 消防栓
+  LoadGlftModel('modals/gltf/43dc30aa-e48d-47c2-8863-f2f4d34b03c7').then(gltf => {
+    instance.scene!.add(gltf.scene)
+  })
+
+  // 其他地块
+  LoadGlftModel('modals/gltf/44122750-a8a4-425e-a570-bba504e26b53').then(gltf => {
+    instance.scene!.add(gltf.scene)
+  })
+
+  // obj模型
+  LoadObjModel(['modals/印象城.mtl', 'modals/yxc.obj']).then(obj => {
+    obj.scale.set(.1, .1, .1)
+    obj.position.set(0, 0, 0)
+    instance.scene?.add(obj)
   })
 })
 </script>
@@ -33,6 +47,7 @@ html {
   padding: 0;
   margin: 0;
 }
+
 #playground {
   width: 100vw;
   height: 100vh;
