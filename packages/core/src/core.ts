@@ -14,6 +14,11 @@ import {
 } from 'three'
 import Stats from 'stats.js'
 
+const enum MODE {
+  DEV = 'dev',
+  PROD = 'prod',
+}
+
 const defaultOption: ThreeOptions = {
   mode: 'prod',
   clearColor: 0xffffff,
@@ -65,14 +70,16 @@ const init = (instance: ThreeInstance, container: HTMLElement) => {
     instance.ambientLight = initAmbientLight(instance.options.ambientLightOption)
     instance.scene.add(instance.ambientLight)
   }
-
+  // 相机
   instance.camera = initCamera(container)
+  // 渲染器
   instance.renderer = initRenderer(container, instance.options.clearColor!)
+  // 添加到dom容器
   instance.container.appendChild(instance.renderer.domElement)
-
+  // 控制
   instance.controls = initDefaultControl(instance)
-
-  if (instance.options.mode === 'dev') {
+  // dev模式控制
+  if (instance.options.mode === MODE.DEV) {
     initStats(container)
     initAxisHelper(instance)
   }
@@ -155,7 +162,11 @@ const initStats = (container: HTMLElement) => {
   return stats
 }
 
-const initAxisHelper = (instance: ThreeInstance)=>{
+/**
+ * 创建坐标系
+ * @param instance three实例
+ */
+const initAxisHelper = (instance: ThreeInstance) => {
   const axesHelper = new AxesHelper(100)
   instance.scene!.add(axesHelper)
 }

@@ -1,4 +1,4 @@
-import { AmbientLight, Camera, Renderer, Scene } from 'three'
+import { AmbientLight, Camera, LoadingManager, Renderer, Scene } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export type LoadersArray = Array<'fbx' | 'gltf' | 'obj'>
@@ -39,7 +39,7 @@ export type ThreeOptions = {
    * `dev` 显示fps等信息
    * `prod` 无信息显示
    */
-  mode?: 'dev' | 'prod'
+  mode: 'dev' | 'prod'
   /**
    * 背景色 - 16进制数字 `0xffffff` 默认
    */
@@ -72,5 +72,10 @@ export type ThreeInstance = {
   effectSobel?: any // todo
   controls: OrbitControls | any // todo
   composer: any // todo
-  stats: any,
+  stats: any
+}
+
+export type loaderOptions = {
+  manager: LoadingManager
+  onProgress: Function
 }
