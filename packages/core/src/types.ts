@@ -1,4 +1,4 @@
-import { AmbientLight, Camera, LoadingManager, Renderer, Scene } from 'three'
+import { AmbientLight, LoadingManager, Renderer, Scene } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export type LoadersArray = Array<'fbx' | 'gltf' | 'obj'>
@@ -72,7 +72,7 @@ export type ThreeInstance = {
   effectSobel?: any // todo
   controls: OrbitControls | any // todo
   composer: any // todo
-  stats: any
+  stats: Stats
 }
 
 export type loaderOptions = {

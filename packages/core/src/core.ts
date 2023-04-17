@@ -37,6 +37,7 @@ export class ThreeJs {
   public scene: Scene | null = null
   public camera: Camera | null = null
   public renderer: Renderer | null = null
+  private stats: Stats | null = null
   constructor(container: HTMLElement, options: ThreeOptions) {
     this.container = container
 
@@ -52,6 +53,9 @@ export class ThreeJs {
   render() {
     const loop = () => {
       this.renderer?.render(this.scene!, this.camera!)
+      if (this.options.mode === MODE.DEV) {
+        this.stats!.update()
+      }
       requestAnimationFrame(loop)
     }
     loop()
@@ -80,7 +84,7 @@ const init = (instance: ThreeInstance, container: HTMLElement) => {
   instance.controls = initDefaultControl(instance)
   // dev模式控制
   if (instance.options.mode === MODE.DEV) {
-    initStats(container)
+    instance.stats = initStats(container)
     initAxisHelper(instance)
   }
 }
@@ -152,7 +156,7 @@ const initDefaultControl = (instance: ThreeInstance): OrbitControls =>
  * @param container 容器
  * @returns Stats
  */
-const initStats = (container: HTMLElement) => {
+const initStats = (container: HTMLElement): Stats => {
   const stats = new Stats()
   // 将性能监控屏区显示在左上角
   stats.dom.style.position = 'absolute'
