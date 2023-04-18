@@ -66,12 +66,12 @@ export type ThreeInstance = {
   container: HTMLElement
   options: ThreeOptions
   scene: Scene | null
-  camera: any // todo 明确类型
+  camera: any // todo 多种类型
   renderer: Renderer | null
   ambientLight: AmbientLight | null
   effectSobel?: any // todo
-  controls: OrbitControls | any // todo
-  composer: any // todo
+  controls: OrbitControls | any // todo 多种类型
+  composer: any // todo 多种类型
   stats: Stats
 }
 
