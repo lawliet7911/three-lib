@@ -1,5 +1,8 @@
 import { merge } from '@three-lib/utils/src'
 import { AmbientLightOption, ThreeInstance, ThreeOptions } from './types'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {
   AmbientLight,
@@ -7,13 +10,15 @@ import {
   Camera,
   Color,
   ColorRepresentation,
+  GridHelper,
+  Material,
   PerspectiveCamera,
   Renderer,
   Scene,
   WebGLRenderer,
 } from 'three'
 import Stats from 'stats.js'
-
+import { createAntiAlias } from './antiAlias/index'
 const enum MODE {
   DEV = 'dev',
   PROD = 'prod',
@@ -26,6 +31,7 @@ const defaultOption: ThreeOptions = {
   loaders: [],
   loading: false,
   antiAliasingType: {
+    type: 'fxaa',
     sampleLevel: 1,
     unbiased: true,
   },
@@ -34,10 +40,12 @@ const defaultOption: ThreeOptions = {
 export class ThreeJs {
   private container: HTMLElement
   private options: ThreeOptions
+  private stats: Stats | null = null
   public scene: Scene | null = null
   public camera: Camera | null = null
   public renderer: Renderer | null = null
-  private stats: Stats | null = null
+  public animates: Function[] = []
+  public composer: EffectComposer | null = null
   constructor(container: HTMLElement, options: ThreeOptions) {
     this.container = container
 
@@ -56,6 +64,14 @@ export class ThreeJs {
       if (this.options.mode === MODE.DEV) {
         this.stats!.update()
       }
+      if (this.composer) {
+        this.composer.render()
+      }
+      // animate queue
+      this.animates.forEach((fn) => {
+        if (typeof fn !== 'function') return
+        fn()
+      })
       requestAnimationFrame(loop)
     }
     loop()
@@ -82,10 +98,16 @@ const init = (instance: ThreeInstance, container: HTMLElement) => {
   instance.container.appendChild(instance.renderer.domElement)
   // 控制
   instance.controls = initDefaultControl(instance)
+  // 渲染通道
+  instance.composer = initEffectComposer(instance)
+  // AA （antiAlias 抗锯齿）
+  instance.antiAlias = setAntiAlias(instance)
+
   // dev模式控制
   if (instance.options.mode === MODE.DEV) {
     instance.stats = initStats(container)
     initAxisHelper(instance)
+    initGridHelper(instance)
   }
 }
 
@@ -104,7 +126,7 @@ const initCamera = (
   cameraParams = {
     fov: 70,
     near: 0.1,
-    far: 2000,
+    far: 10000,
     position: { x: 10, y: 40, z: 50 },
   }
 ): Camera => {
@@ -123,8 +145,9 @@ const initCamera = (
  * @returns
  */
 const initRenderer = (container: HTMLElement, clearColor: ColorRepresentation): Renderer => {
-  const renderer = new WebGLRenderer({ antialias: true })
-  renderer.setClearColor(clearColor, 1.0)
+  const renderer = new WebGLRenderer({ antialias: true, alpha: true })
+  renderer.setClearColor(clearColor, 0)
+  renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(container.clientWidth, container.clientHeight)
   return renderer
 }
@@ -137,7 +160,6 @@ const initResizeListener = (instance: ThreeInstance) => {
   window.addEventListener('resize', () => {
     instance.camera.aspect = window.innerWidth / window.innerHeight
     instance.camera.updateProjectionMatrix()
-
     instance.renderer!.setSize(window.innerWidth, window.innerHeight)
     instance.composer?.setSize(window.innerWidth, window.innerHeight)
 
@@ -146,6 +168,27 @@ const initResizeListener = (instance: ThreeInstance) => {
       instance.effectSobel.uniforms['resolution'].value.y = window.innerHeight * window.devicePixelRatio
     }
   })
+}
+
+const initEffectComposer = (instance: ThreeInstance): EffectComposer => {
+  const composer = new EffectComposer(instance.renderer as WebGLRenderer)
+  const renderPass = new RenderPass(instance.scene!, instance.camera)
+  composer.addPass(renderPass)
+  return composer
+}
+
+/**
+ * 初始化AA抗锯齿
+ * @param instance three实例
+ */
+export const setAntiAlias = (instance: ThreeInstance) => {
+  const { type } = instance.options.antiAliasingType!
+  // todo aa问题 导致mac灰色横线，windows下没有
+  instance.antiAlias = createAntiAlias(type)
+  instance.composer.addPass(instance.antiAlias)
+  if (instance.options.mode === MODE.DEV) {
+    console.info(`${type}-设置成功`)
+  }
 }
 
 const initDefaultControl = (instance: ThreeInstance): OrbitControls =>
@@ -170,7 +213,30 @@ const initStats = (container: HTMLElement): Stats => {
  * 创建坐标系
  * @param instance three实例
  */
-const initAxisHelper = (instance: ThreeInstance) => {
+const initAxisHelper = (instance: ThreeInstance): void => {
   const axesHelper = new AxesHelper(100)
   instance.scene!.add(axesHelper)
+}
+
+/**
+ * 创建坐标网格
+ * @param instance three实例
+ */
+const initGridHelper = (instance: ThreeInstance): void => {
+  const grid = new GridHelper(1000, 10, 0xffffff, 0xffffff)
+
+  const setMaterialProperties = (material: Material): void => {
+    material.opacity = 0.5
+    material.depthWrite = false
+    material.transparent = true
+  }
+
+  if (Array.isArray(grid.material)) {
+    // 判断是否为数组
+    grid.material.forEach(setMaterialProperties)
+  } else {
+    // 如果不是数组，说明只有一个材质对象
+    setMaterialProperties(grid.material)
+  }
+  instance.scene!.add(grid)
 }

@@ -8,7 +8,8 @@
     "play"
   ],
   "scripts": {
-    "play": "pnpm -C play dev"
+    "play": "pnpm -C play dev --host",
+    "dev": "pnpm -C play dev --host"
   },
   "keywords": [],
   "author": "",

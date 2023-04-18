@@ -1,5 +1,6 @@
 import { AmbientLight, LoadingManager, Renderer, Scene } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 
 export type LoadersArray = Array<'fbx' | 'gltf' | 'obj'>
 /**
@@ -9,13 +10,17 @@ type PowerOfTwo = 0 | 1 | 2 | 4 | 8 | 16
 
 type AntiALiasConfig = {
   /**
+   * 抗锯齿类型
+   */
+  type: string
+  /**
    * 抗锯齿采样级别,只能为2的幂次方,最大为16 eg.(0,1,2,4,8,16)
    */
-  sampleLevel: PowerOfTwo
+  sampleLevel?: PowerOfTwo
   /**
    * 采样偏差-设置为`true`进行无偏采样，即每个像素的每个采样点都会进行相同的计算，不会出现偏差。这种设置可以提高抗锯齿的效果，但需要更多的计算资源。
    */
-  unbiased: boolean
+  unbiased?: boolean
 }
 
 export type AmbientLightOption = {
@@ -71,8 +76,10 @@ export type ThreeInstance = {
   ambientLight: AmbientLight | null
   effectSobel?: any // todo
   controls: OrbitControls | any // todo 多种类型
-  composer: any // todo 多种类型
+  composer: EffectComposer
   stats: Stats
+  animates: Function[]
+  antiAlias: any // todo 多种类型
 }
 
 export type loaderOptions = {

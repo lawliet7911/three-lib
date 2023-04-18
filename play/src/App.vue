@@ -10,12 +10,17 @@ onMounted(async () => {
     ambientLightOption: {
       show: true,
     },
+    antiAliasingType: { type: 'smaa' }
   })
-  
+
   instance.render()
 
   // 场地模型
   const modal = await LoadGlftModel('modals/gltf/6fdf02a6-c66f-4749-83bb-4eae20ab8b5b')
+  // 静态模型 不自动更新
+  // modal.scene.matrixAutoUpdate = false
+  // 需要更新调用
+  // modal.scene.updateMatrix() 
   instance.scene!.add(modal.scene)
 
   // 消防栓
