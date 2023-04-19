@@ -145,7 +145,8 @@ const initCamera = (
  * @returns
  */
 const initRenderer = (container: HTMLElement, clearColor: ColorRepresentation): Renderer => {
-  const renderer = new WebGLRenderer({ antialias: true, alpha: true })
+  // alpha 半透明通道（rgba的a）
+  const renderer = new WebGLRenderer({ antialias: true, alpha: true, precision: 'highp'})
   renderer.setClearColor(clearColor, 0)
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(container.clientWidth, container.clientHeight)
