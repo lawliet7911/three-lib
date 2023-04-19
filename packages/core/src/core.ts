@@ -30,7 +30,7 @@ const defaultOption: ThreeOptions = {
   ambientLightOption: { show: false, color: 0xffffff, intensity: 0.8 },
   loaders: [],
   loading: false,
-  antiAliasingType: {
+  antiAlias: {
     type: 'fxaa',
     sampleLevel: 1,
     unbiased: true,
@@ -147,7 +147,7 @@ const initCamera = (
 const initRenderer = (container: HTMLElement, clearColor: ColorRepresentation): Renderer => {
   // alpha 半透明通道（rgba的a）
   const renderer = new WebGLRenderer({ antialias: true, alpha: true, precision: 'highp'})
-  renderer.setClearColor(clearColor, 0)
+  renderer.setClearColor(clearColor, 1)
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(container.clientWidth, container.clientHeight)
   return renderer
@@ -183,7 +183,8 @@ const initEffectComposer = (instance: ThreeInstance): EffectComposer => {
  * @param instance three实例
  */
 export const setAntiAlias = (instance: ThreeInstance) => {
-  const { type } = instance.options.antiAliasingType!
+  if(!instance.options.antiAlias) return
+  const { type } = instance.options.antiAlias
   // todo aa问题 导致mac灰色横线，windows下没有
   instance.antiAlias = createAntiAlias(type)
   instance.composer.addPass(instance.antiAlias)

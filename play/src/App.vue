@@ -10,7 +10,7 @@ onMounted(async () => {
     ambientLightOption: {
       show: true,
     },
-    antiAliasingType: { type: 'smaa' }
+    antiAlias: false
   })
 
   instance.render()
@@ -33,6 +33,9 @@ onMounted(async () => {
 
   // obj模型
   const yxc = await LoadObjModel(['modals/印象城.mtl', 'modals/yxc.obj'])
+  // yxc.children.forEach(mesh=>{
+  //   mesh.material.wireframe = true
+  // })
   yxc.scale.set(.1, .1, .1)
   yxc.position.set(0, 0, 0)
   instance.scene?.add(yxc)

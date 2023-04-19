@@ -64,7 +64,7 @@ export type ThreeOptions = {
   /**
    * 抗锯齿配置
    */
-  antiAliasingType?: AntiALiasConfig
+  antiAlias?: AntiALiasConfig | false
 }
 
 export type ThreeInstance = {
